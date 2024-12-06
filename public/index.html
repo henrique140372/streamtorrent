@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stream Torrent</title>
+</head>
+<body>
+    <h1>Bem-vindo ao Stream Torrent</h1>
+    <form id="torrent-form">
+        <label for="magnet-link">Magnet Link:</label>
+        <input type="text" id="magnet-link" required />
+        <button type="submit">Gerar Stream</button>
+    </form>
+
+    <div id="content"></div>
+
+    <script>
+        document.getElementById('torrent-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const magnetLink = document.getElementById('magnet-link').value;
+            const response = await fetch(`/api/generate-stream?magnet=${encodeURIComponent(magnetLink)}`);
+            const data = await response.json();
+
+            if (data.status === 'success') {
+                const content = document.getElementById('content');
+                data.movies.forEach(movie => {
+                    const iframe = document.createElement('iframe');
+                    iframe.src = movie.embedUrl;
+                    iframe.width = '640';
+                    iframe.height = '360';
+                    content.appendChild(iframe);
+                });
+            }
+        });
+    </script>
+</body>
+</html>
